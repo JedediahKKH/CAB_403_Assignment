@@ -1,0 +1,25 @@
+Client Code:
+quit_now=false;
+while(!quit_now){
+  connect_to_port()
+  send_to_server()
+  display_from_server()
+}
+
+Server Code:
+
+
+while(true){
+  bool login_success;
+  login_success=login_check();
+
+  if (login_success){
+    initialise_game()
+    run_game()
+    break;
+  }else{
+    login_failure()
+  }
+  update_leaderboard(info)
+
+}

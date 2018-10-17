@@ -1,4 +1,9 @@
-// Tester code for Assignment
+/*
+This code serves as a scaffold on how the server.c should initialise the table of admissible usernames
+and their associated passwords and store them in variables. such that the server is able to compare
+incoming strings from client programs with these variables.
+
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -16,7 +21,8 @@ int main(){
 	//char array[20];
 
 	// point to desired file
-	ptr_file=fopen("/home/koh_kim_hai/Downloads/CAB403_Assignment/Authentication.txt","r");
+	//use pwd
+	ptr_file=fopen("Authentication.txt","r");
 	// if the file does not exists
 	if (!ptr_file)
 		return 1;

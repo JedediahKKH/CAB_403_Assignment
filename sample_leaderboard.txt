@@ -1,0 +1,7 @@
+Maolin	7	2	2
+Anthony	24	2	2
+Anna	34 	2	3
+Anna	26	2	3
+Justin	38	2	4
+Justin	33	2	4
+Anthony	51	2	2

@@ -3,6 +3,8 @@ This code serves as a scaffold on how the server.c should initialise the table o
 and their associated passwords and store them in variables. such that the server is able to compare
 incoming strings from client programs with these variables.
 
+Ensure that the Authentication.txt file is located in the same directory/ folder as the file that runs this code.
+
 */
 #include <stdio.h>
 #include <stdlib.h>

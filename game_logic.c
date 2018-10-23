@@ -8,7 +8,7 @@ typedef struct
 	int adjacent_mines;
 	bool revealed;
 	bool is_mine;
-
+	// This struct builds the tiles; should i have a pointer to the next tile that i wish to update here?
 } Tile;
 
 typedef struct
@@ -18,6 +18,7 @@ typedef struct
 	bool game_won; // determine if game has been successfully won
 
 	Tile tiles[NUM_TILES_X][NUM_TILES_Y]; // define game size
+	// This stuct builds the whole game
 } GameState;
 
 
@@ -32,16 +33,17 @@ void place_mines(){
 		}while(tile_contains_mine(x,y));
 		// Places mine at (x,y)
 	}
-
+	// Function to place a mine at the beginning of the game
 }
 
-bool tile_contains_mine(int x, int y){
+int tile_contains_mine(int x, int y){
 	if(tiles[x][y].is_mine){
-		return true;
+		return 1;
 	}
 	else{
-		return false;
+		return 0;
 	}
+	// this function acts as a bool, c has no library for booleans
 }
 
 void cleanup(){
@@ -74,4 +76,25 @@ int main(int argc, char* argv[]){
 	// [...]
 
 	// Client side
+	// startup with 2 input of hostname and PORT_NUMBER<- receives a thread here
+	// store username in buffer
+	// store password in buffer
+	// send buffer to server
+	// clear buffer
+	// receive buffer from server<- successful login/ login failed
+	// if not successful, will terminate
+	// else-> draw_main_menu
+	// scan input-> store into buffer (play,show,quit)
+	// send to server
+	// clear buffer
+	// receive buffer from server (game,leaderboard,terminate)
+	// if game-> draw_game
+		// enter infinite while loop
+			// wait for further input
+		// return to main_menu		
+	// else if leaderboard-> draw_leaderboard
+		// wait for input
+		
+	// else terminate
+
 }

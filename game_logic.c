@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>// not needed in final code?
+#include <time.h>
 
 
 typedef struct
@@ -23,6 +24,7 @@ typedef struct
 	int game_quit; // determine if game ends due to quitting
 	int game_won; // determine if game has been successfully won
 	int game_over;// state of game_over
+	double time_taken;
 	int current_mines_active;
 	Tile tiles[NUM_TILES_X][NUM_TILES_Y]; // define game size
 	// This stuct builds the whole game
@@ -30,9 +32,10 @@ typedef struct
 
 Tile this_tile;
 GameState this_game;
+time_t start_t,end_t;
 char A[9],B[9],C[9],D[9],E[9],F[9],G[9],H[9],I[9];
 //srand(RANDOM_NUMBER_SEED);
-
+//double difftime(time_t time1,time_t time2);
 void initialise_game(){
 	// initialise timer
 
@@ -40,6 +43,8 @@ void initialise_game(){
 	this_game.game_quit=0;
 	this_game.game_over=0;
 	this_game.current_mines_active=10;
+	this_tile.display_symbol=' ';
+	//time(&start_t);
 
 }
 
@@ -78,7 +83,7 @@ void place_mines(){
 			y=rand() % NUM_TILES_Y;
 		}while(tile_contains_mine(x,y));
 		this_game.tiles[y][x].is_mine=1;
-
+		this_game.tiles[y][x].display_symbol='*';
 		// +1 to neighbour.adjacent_mines
 		for(int xoff=-1;xoff<1+1;xoff++){
 			for(int yoff=-1;yoff<1+1;yoff++){
@@ -111,6 +116,7 @@ void place_flag(int x, int y){
 			printf("You found a mine! Mine has been defused.\n");
 			this_game.current_mines_active-=1;
 			this_game.tiles[y][x].is_revealed=1;
+			this_game.tiles[y][x].display_symbol='+';
 			printf("Number of active mines left: %d\n", this_game.current_mines_active);
 		}else{
 			printf("You have already defused this mine, find another mine!\n");
@@ -133,11 +139,13 @@ void reveal_this_tile(int x, int y){
 	printf("Revealing Tile[%d][%d]\n",x,y);
 	if(this_game.tiles[y][x].adjacent_mines!=0){
 		// If this tile has a non-zero number of adjacent mines
-
+		// Set its display symbol to the number of adjacent mines
+		this_game.tiles[y][x].display_symbol=this_game.tiles[y][x].adjacent_mines+'0';
 		//printf("Tile[%d][%d] has been revealed!It has %d neighbouring mines\n",x,y,this_game.tiles[y][x].adjacent_mines);
 		return;
 	}else{
-		// This tile has no mines nearby; reveal all neaighbours!
+		// This tile has no mines nearby; reveal all neighbours!
+		this_game.tiles[y][x].display_symbol='0';
 		for(int xoff=-1;xoff<1+1;xoff++){
 			for(int yoff=-1;yoff<1+1;yoff++){
 				int i=x+xoff;
@@ -173,17 +181,116 @@ void reveal(int x,int y){
 void steppity_step(){
 
 	int x,y;
-	x=(int)(2*rand()%NUM_TILES_X)/2;
+	x=(int)(2/3*rand()%NUM_TILES_X);
 	y=rand()%NUM_TILES_Y;
 	reveal(x,y);
 	
 }
+void update_char_array(){
+	// For all the columns in Row A, store them in the char array
 
+	for(int i=0;i<NUM_TILES_X;i++){
+		if(this_game.tiles[0][i].is_revealed==1){
+			A[i]=this_game.tiles[0][i].display_symbol;
+		}
+		else if(this_game.tiles[0][i].is_revealed==0){
+			A[i]=' ';
+		}
+		if(this_game.tiles[1][i].is_revealed==1){
+			B[i]=this_game.tiles[1][i].display_symbol;
+		}
+		else if(this_game.tiles[0][i].is_revealed==0){
+			B[i]=' ';
+		}
+		if(this_game.tiles[2][i].is_revealed==1){
+			C[i]=this_game.tiles[2][i].display_symbol;
+		}
+		else if(this_game.tiles[0][i].is_revealed==0){
+			C[i]=' ';
+		}
+		if(this_game.tiles[3][i].is_revealed==1){
+			D[i]=this_game.tiles[3][i].display_symbol;
+		}
+		else if(this_game.tiles[0][i].is_revealed==0){
+			D[i]=' ';
+		}
+		if(this_game.tiles[4][i].is_revealed==1){
+			E[i]=this_game.tiles[4][i].display_symbol;
+		}
+		else if(this_game.tiles[0][i].is_revealed==0){
+			E[i]=' ';
+		}
+		if(this_game.tiles[5][i].is_revealed==1){
+			F[i]=this_game.tiles[5][i].display_symbol;
+		}
+		else if(this_game.tiles[0][i].is_revealed==0){
+			F[i]=' ';
+		}
+		if(this_game.tiles[6][i].is_revealed==1){
+			G[i]=this_game.tiles[6][i].display_symbol;
+		}
+		else if(this_game.tiles[0][i].is_revealed==0){
+			G[i]=' ';
+		}
+		if(this_game.tiles[7][i].is_revealed==1){
+			H[i]=this_game.tiles[7][i].display_symbol;
+		}
+		else if(this_game.tiles[0][i].is_revealed==0){
+			H[i]=' ';
+		}
+		if(this_game.tiles[8][i].is_revealed==1){
+			I[i]=this_game.tiles[8][i].display_symbol;
+			//printf("I[%d] is %c\n",i,I[i]);
+		}
+		else if(this_game.tiles[0][i].is_revealed==0){
+			I[i]=' ';
+		}
+		//printf("D[%d] is %c\n",i,D[i]);
+	}
+
+
+}
+
+void display_game(){
+	update_char_array();
+	printf("\n\n\nRemaining Mines: %d\n", this_game.current_mines_active);
+	printf("\n   \t0\t1\t2\t3\t4\t5\t6\t7\t8 \n");
+	printf("-----------------------------------------------------------------------------------------\n");
+	printf("0 |\t%c\t%c\t%c\t%c\t%c\t%c\t%c\t%c\t%c\n",A[0],A[1],A[2],A[3],A[4],A[5],A[6],A[7],A[8]);
+	printf("1 |\t%c\t%c\t%c\t%c\t%c\t%c\t%c\t%c\t%c\n",B[0],B[1],B[2],B[3],B[4],B[5],B[6],B[7],B[8]);
+	printf("2 |\t%c\t%c\t%c\t%c\t%c\t%c\t%c\t%c\t%c\n",C[0],C[1],C[2],C[3],C[4],C[5],C[6],C[7],C[8]);
+	printf("3 |\t%c\t%c\t%c\t%c\t%c\t%c\t%c\t%c\t%c\n",D[0],D[1],D[2],D[3],D[4],D[5],D[6],D[7],D[8]);
+	printf("4 |\t%c\t%c\t%c\t%c\t%c\t%c\t%c\t%c\t%c\n",E[0],E[1],E[2],E[3],E[4],E[5],E[6],E[7],E[8]);
+	printf("5 |\t%c\t%c\t%c\t%c\t%c\t%c\t%c\t%c\t%c\n",F[0],F[1],F[2],F[3],F[4],F[5],F[6],F[7],F[8]);
+	printf("6 |\t%c\t%c\t%c\t%c\t%c\t%c\t%c\t%c\t%c\n",G[0],G[1],G[2],G[3],G[4],G[5],G[6],G[7],G[8]);
+	printf("7 |\t%c\t%c\t%c\t%c\t%c\t%c\t%c\t%c\t%c\n",H[0],H[1],H[2],H[3],H[4],H[5],H[6],H[7],H[8]);
+	printf("8 |\t%c\t%c\t%c\t%c\t%c\t%c\t%c\t%c\t%c\n",I[0],I[1],I[2],I[3],I[4],I[5],I[6],I[7],I[8]);
+}
+
+void reveal_all(){
+	for(int j=0;j<NUM_TILES_Y;j++){
+		for(int i=0;i<NUM_TILES_X;i++){
+			this_game.tiles[j][i].is_revealed=1;
+			if(this_game.tiles[j][i].is_mine==0){
+				this_game.tiles[j][i].display_symbol=' ';
+			}
+
+		}
+	}
+
+}
 void cleanup(){
-	// Update leaderboards if applicable
+	//time(&end_t);
+	// Pass out user, time taken, games won, total game played<- always + 1 when updating server
+
+
 	// free all memory
 	// return to main menu
 
+	//this_game.time_taken=diff_time(end_t,start_t);
+	
+
+	
 }
 
 
@@ -195,7 +302,7 @@ int main(int argc, char* argv[]){
 	// Manipulate some stuff
 	//this_game.tiles[1][2].is_mine=1;
 	place_mines();
-	//reveal(3,6);
+//	reveal(3,6);
 	//reveal_this_tile(7,4);
 	//reveal_this_tile(8,2);
 
@@ -205,17 +312,39 @@ int main(int argc, char* argv[]){
 		if(this_game.current_mines_active==0){
 			printf("Congratulations! You have defused all mines!\n");
 			this_game.game_won=1;
+			return this_game.game_won; // break out of the while loop here
 		}
+		// Wait for player input		
 		//place_lots_of_flags();// Leave in for testing
-		//reveal_this_tile(1,6);
+		//reveal_this_tile(4,5);
 		steppity_step();
-		counter+=1;
-		printf("Loops done: %d\n",counter);
+		//counter+=1;
+		//printf("Loops done: %d\n",counter);
+		display_game();
 	}
 
-	
+/*	
+	reveal(3,7);
+	display_game();
+	reveal(8,3);
+	display_game();
+	reveal(1,8);
+	display_game();
+*/
 	printf("\n\nDo Game Quit/ Game Over/ Game Won Logic Here\n");
-	
-	
+	if(this_game.game_quit){
+		printf("Quit Logic\n");
+	}
+	else if(this_game.game_over){
+		printf("Gameover logic\n");
+		reveal_all();
+		
+		display_game();
+	}
+	else{
+		printf("Game Won Logic!\n");
+	}	
+	cleanup();
 	printf("End of code\n");
+	return 0;
 }

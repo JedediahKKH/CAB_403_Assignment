@@ -31,7 +31,6 @@ Tile this_tile;
 GameState this_game;
 //srand(RANDOM_NUMBER_SEED);
 
-
 void initialise_game(){
 	// initialise timer
 
@@ -77,6 +76,19 @@ void place_mines(){
 			y=rand() % NUM_TILES_Y;
 		}while(tile_contains_mine(x,y));
 		this_game.tiles[y][x].is_mine=1;
+
+		// +1 to neighbour.adjacent_mines
+		for(int xoff=-1;xoff<1+1;xoff++){
+			for(int yoff=-1;yoff<1+1;yoff++){
+				int i=x+xoff;
+				int j=y+yoff;
+				// If i,j are not outside of the map, +1 to their adjacent_mines
+				if(i>-1&&i<9&&j>-1&&j<9){
+					this_game.tiles[j][i].adjacent_mines+=1;
+				
+				}	
+			}
+		}
 		printf("Mine %d placed at %d,%d\n",i,x,y);
 	}
 
@@ -126,6 +138,7 @@ void reveal_this_tile(int x, int y){\
 	}// If the tile if not a mine
 		
 	else{
+		this_game.tiles[y][x].is_revealed=1;// reveal the tile
 		printf("Phew! This tile is not a mine. What a lucky day!\n");
 		//-> check if ANY of the neighbours are mines
 		printf("Checking all 8 neighours for mines!\n");
@@ -138,11 +151,13 @@ void reveal_this_tile(int x, int y){\
 				
 					// This will check self, however, since self is not a mine, +0 will not affect total.
 					if(this_game.tiles[j][i].is_mine==1){
-						this_game.tiles[y][x].adjacent_mines+=1;// Add a mine for each neighbouring mine
+						//this_game.tiles[y][x].adjacent_mines+=1;// Add a mine for each neighbouring mine
 						printf("This neighbour (%d,%d) is a mine!\n",i,j);
 					}// else, this neighbour tile is not a mine
-					else{
+					else if(this_game.tiles[j][i].is_mine==0 && !this_game.tiles[j][i].is_revealed){
 						printf("This neighbour (%d,%d) is not a mine!\n",i,j);
+						// Apply recursion here
+						reveal_this_tile(i,j);
 					}	
 				}
 				else{
@@ -155,6 +170,7 @@ void reveal_this_tile(int x, int y){\
 	}// If this_tile.adjacent_mines!=0, pass this value out to be handled
 	printf("This tile (%d, %d) has %d neighbouring mines!\n",x,y,this_game.tiles[y][x].adjacent_mines);
 }
+
 
 void steppity_step(){
 
@@ -179,7 +195,10 @@ int main(int argc, char* argv[]){
 	// Manipulate some stuff
 	//this_game.tiles[1][2].is_mine=1;
 	place_mines();
-	//reveal_this_tile(5,6);
+	reveal_this_tile(8,3);
+	//reveal_this_tile(7,4);
+	//reveal_this_tile(8,2);
+/*
 	int counter=0;
 	while(!this_game.game_quit && !this_game.game_over && !this_game.game_won){
 		
@@ -187,13 +206,13 @@ int main(int argc, char* argv[]){
 			printf("Congratulations! You have defused all mines!\n");
 			this_game.game_won=1;
 		}
-		place_lots_of_flags();// Leave in for testing
+		//place_lots_of_flags();// Leave in for testing
 		//reveal_this_tile(1,6);
 		//steppity_step();
 		counter+=1;
 		printf("Loops done: %d\n",counter);
 	}
-
+*/
 	
 	printf("\n\nDo Game Quit/ Game Over/ Game Won Logic Here\n");
 	
